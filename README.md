@@ -2,6 +2,10 @@
 
 Statický build webu MEDIfogg, nasadený cez GitHub Pages **len na interné pripomienkovanie**.
 
+Aktuálna verzia: build z 18. 9. 2026 18:16 — font Inter, 11 nových interaktívnych
+komponentov (PetriDish, RoomFog, SkMap, LiveCounter, SystemDiagram a ďalšie)
+a nová stránka `/lab`.
+
 ## 🔗 Živý náhľad
 
 **https://danieldhudak-eng.github.io/**
@@ -13,6 +17,7 @@ Stačí kliknúť a preklikať sa webom ako po reálnej stránke.
 | Stránka | Odkaz |
 |---|---|
 | Domov | [/](https://danieldhudak-eng.github.io/) |
+| **Design lab** (nová) | [/lab](https://danieldhudak-eng.github.io/lab) |
 | Problém | [/problem](https://danieldhudak-eng.github.io/problem) |
 | Úrovne systému | [/urovne-systemu](https://danieldhudak-eng.github.io/urovne-systemu) |
 | Klinická štúdia | [/klinicka-studia](https://danieldhudak-eng.github.io/klinicka-studia) |
