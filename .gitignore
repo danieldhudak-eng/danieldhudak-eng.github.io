@@ -8,3 +8,6 @@
 .vscode/
 .idea/
 *.swp
+
+# Serverový handler — na GitHub Pages nebeží, nepublikovať verejne
+api/
