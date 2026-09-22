@@ -1,5 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /dakujeme
-
-Sitemap: https://www.medifogg.sk/sitemap-index.xml
+Disallow: /
