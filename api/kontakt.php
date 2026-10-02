@@ -15,7 +15,7 @@ $CC = '';                     // voliteľná kópia, napr. 'adam@opusmagnus.co'
 $FROM = 'web@opusmagnus.co';  // odosielateľ na doméne hostingu (Websupport)
 $SUBJECT_PREFIX = '[MEDIfogg web · dev] ';
 $THANKS_URL = '/dakujeme';
-$ALLOWED_HOSTS = ['medifogg.opusmagnus.co', 'development.opusmagnus.co', 'www.medifogg.sk', 'medifogg.sk', 'localhost', '127.0.0.1'];
+$ALLOWED_HOSTS = ['medifogg.opusmagnus.co', 'www.medifogg.sk', 'medifogg.sk', 'localhost', '127.0.0.1'];
 // -----------------------------------------------------------------------------
 
 header('X-Content-Type-Options: nosniff');
