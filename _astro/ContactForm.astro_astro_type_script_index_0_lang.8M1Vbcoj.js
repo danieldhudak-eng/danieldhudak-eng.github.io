@@ -1,0 +1,1 @@
+import{n as e}from"./form.Br9pzmtW.js";e(),document.addEventListener(`astro:page-load`,e);
