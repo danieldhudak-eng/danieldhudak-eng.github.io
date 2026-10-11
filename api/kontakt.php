@@ -10,12 +10,13 @@
 declare(strict_types=1);
 
 // --- Nastavenie -------------------------------------------------------------
-$TO = 'daniel@opusmagnus.co'; // TODO(klient): sales@detectair.sk (+ kópia do CRM), keď bude rozhodnuté
+$TO = 'daniel@opusmagnus.co'; // TODO(klient): príjemca v produkcii potvrdí Daniel (návrh contact@medifogg.com)
 $CC = '';                     // voliteľná kópia, napr. 'adam@opusmagnus.co'
-$FROM = 'web@opusmagnus.co';  // odosielateľ na doméne hostingu (Websupport)
+$FROM = 'web@opusmagnus.co';  // odosielateľ na doméne hostingu (Websupport); v produkcii adresa na doméne produkčného hostingu
 $SUBJECT_PREFIX = '[MEDIfogg web · dev] ';
 $THANKS_URL = '/dakujeme';
-$ALLOWED_HOSTS = ['medifogg.opusmagnus.co', 'www.medifogg.sk', 'medifogg.sk', 'localhost', '127.0.0.1'];
+// Produkcia: www.medifogg.com (ostatné domény klienta len presmerúvajú 301, viď .htaccess)
+$ALLOWED_HOSTS = ['www.medifogg.com', 'medifogg.com', 'medifogg.opusmagnus.co', 'localhost', '127.0.0.1'];
 // -----------------------------------------------------------------------------
 
 header('X-Content-Type-Options: nosniff');
