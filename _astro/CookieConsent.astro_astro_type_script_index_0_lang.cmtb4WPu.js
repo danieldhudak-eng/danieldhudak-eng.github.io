@@ -1,0 +1,1 @@
+import{t as e}from"./consent.BGuGfprh.js";e(),document.addEventListener(`astro:page-load`,e);
