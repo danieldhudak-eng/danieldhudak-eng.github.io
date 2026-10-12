@@ -9,7 +9,7 @@ AddDefaultCharset UTF-8
 
   # Produkcia (11. 10. 2026): hlavná doména https://www.medifogg.com, ostatné domény klienta 301 na ňu.
   # Platí len pre vymenované hosty, dev (medifogg.opusmagnus.co) a localhost sa netýka.
-  RewriteCond %{HTTP_HOST} ^(medifogg\.com|(www\.)?detectair\.sk|(www\.)?detectair\.eu|(www\.)?hydrofogg\.eu|(www\.)?detectairtechnologies\.com)$ [NC]
+  RewriteCond %{HTTP_HOST} ^(medifogg\.com|(www\.)?detectair\.sk|(www\.)?detectair\.eu|(www\.)?hydrofogg\.eu|(www\.)?hydrofogg\.sk|(www\.)?detectairtechnologies\.com)$ [NC]
   RewriteRule ^ https://www.medifogg.com%{REQUEST_URI} [R=301,L]
 
   # HTTPS (Websupport má Let's Encrypt; ak certifikát ešte nie je aktívny, tento blok dočasne zakomentovať)
