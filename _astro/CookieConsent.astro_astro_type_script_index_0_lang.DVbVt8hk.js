@@ -1,0 +1,1 @@
+import{t as e}from"./consent.CemMM8p4.js";e(),document.addEventListener(`astro:page-load`,e);
