@@ -3,18 +3,26 @@
  * MEDIfogg web · odoslanie kontaktného formulára e-mailom (Websupport, PHP mail()).
  * Používa sa, keď je PUBLIC_FORM_PROVIDER=custom a PUBLIC_FORM_ENDPOINT=/api/kontakt.php.
  *
- * Nastavenie: upraviť $TO (príjemca) a $FROM (musí byť adresa na doméne hostovanej na Websupporte,
- * inak Websupport e-mail zahodí). Formulár posiela polia: meno, email, telefon, zaujem, sprava, suhlas,
- * zdroj, url + honeypot "website".
+ * Príjemcu, odosielateľa a úložisko nastavuje súbor medifogg-form.php mimo webrootu (api/_form.php). Odosielateľ musí byť
+ * na doméne hostovanej na tom istom hostingu, inak e-mail skončí v spame. Každý dopyt sa najprv uloží (SQLite mimo webrootu,
+ * zoznam na /dopyty/), potom odíde e-mail. Polia: meno, email, telefon, zaujem, sprava, suhlas, zdroj, url + honeypot "website".
  */
 declare(strict_types=1);
 
-// --- Nastavenie -------------------------------------------------------------
-$TO = 'daniel@opusmagnus.co'; // TODO(klient): príjemca v produkcii potvrdí Daniel (návrh contact@medifogg.com)
-$CC = '';                     // voliteľná kópia, napr. 'adam@opusmagnus.co'
-$FROM = 'web@opusmagnus.co';  // odosielateľ na doméne hostingu (Websupport); v produkcii adresa na doméne produkčného hostingu
-$SUBJECT_PREFIX = '[MEDIfogg web · dev] ';
+require __DIR__ . '/_form.php';
+
+// --- Nastavenie (prepíše súbor medifogg-form.php mimo webrootu, viď _form.php) ---
+$cfg = form_config();
+$TO = (string) $cfg['to'];
+$CC = (string) $cfg['cc'];
+$FROM = (string) $cfg['from'];
+$SUBJECT_PREFIX = (string) $cfg['subject_prefix'];
 $THANKS_URL = '/dakujeme';
+// Ďakovná stránka podľa jazyka formulára (/en/thank-you, /de/danke); len lokálna cesta
+$thanksPost = (string) ($_POST['thanks'] ?? '');
+if (preg_match('#^/(?:(?:en|de)/)?[a-z-]+$#', $thanksPost)) {
+    $THANKS_URL = $thanksPost;
+}
 // Produkcia: www.medifogg.com (ostatné domény klienta len presmerúvajú 301, viď .htaccess)
 $ALLOWED_HOSTS = ['www.medifogg.com', 'medifogg.com', 'medifogg.opusmagnus.co', 'localhost', '127.0.0.1'];
 // -----------------------------------------------------------------------------
@@ -75,6 +83,7 @@ $sprava = $field('sprava', 4000);
 $suhlas = $field('suhlas', 10);
 $zdroj = $field('zdroj', 200);
 $url = $field('url', 500);
+$jazyk = $field('jazyk', 5);
 
 $errors = [];
 if ($meno === '') {
@@ -125,31 +134,29 @@ $lines = [
     'URL:             ' . ($url !== '' ? $url : '—'),
     'Čas:             ' . date('Y-m-d H:i:s'),
     'IP:              ' . ($_SERVER['REMOTE_ADDR'] ?? '—'),
+    'Jazyk webu:      ' . ($jazyk !== '' ? strtoupper($jazyk) : 'SK'),
     'Súhlas GDPR:     áno',
 ];
 $body = implode("\n", $lines);
 
-$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-$fromName = '=?UTF-8?B?' . base64_encode('MEDIfogg web') . '?=';
-$headers = [
-    'From: ' . $fromName . ' <' . $FROM . '>',
-    'Reply-To: ' . $meno . ' <' . $email . '>',
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
-    'X-Mailer: medifogg-web',
-];
-if ($CC !== '') {
-    $headers[] = 'Cc: ' . $CC;
+$savedId = form_save([
+    'meno' => $meno, 'email' => $email, 'telefon' => $telefon, 'zaujem' => $zaujem, 'zaujem_label' => $zaujemLabel,
+    'sprava' => $sprava, 'zdroj' => $zdroj, 'url' => $url,
+]);
+if ($savedId === null) {
+    error_log('[medifogg-web] dopyt sa neuložil: ' . $email);
 }
-// Reply-To s menom: odstrániť znaky, ktoré by rozbili hlavičku
-$headers[1] = 'Reply-To: ' . preg_replace('/[^\p{L}\p{N} .\-]/u', '', $meno) . ' <' . $email . '>';
 
-$sent = @mail($TO, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $FROM);
+$sent = form_send_mail($TO, $CC, $FROM, 'MEDIfogg web', $meno, $email, $subject, $body);
+if ($sent) {
+    form_mark_sent($savedId);
+} else {
+    error_log('[medifogg-web] e-mail sa neodoslal: ' . form_mail_error());
+}
 
-if (!$sent) {
-    error_log('[medifogg-web] mail() failed for ' . $email);
-    respond(500, ['ok' => false, 'error' => 'E-mail sa nepodarilo odoslať.'], $THANKS_URL, $wantsJson);
+// Úspech, ak dopyt dorazil aspoň jednou cestou (e-mail alebo uloženie)
+if (!$sent && $savedId === null) {
+    respond(500, ['ok' => false, 'error' => 'Správu sa nepodarilo odoslať.'], $THANKS_URL, $wantsJson);
 }
 
 respond(200, ['ok' => true], $THANKS_URL, $wantsJson);

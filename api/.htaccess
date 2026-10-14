@@ -1,0 +1,5 @@
+# Formulár: verejný je len kontakt.php, knižnica _form.php sa nedá volať priamo.
+Options -Indexes
+<Files "_form.php">
+  Require all denied
+</Files>
