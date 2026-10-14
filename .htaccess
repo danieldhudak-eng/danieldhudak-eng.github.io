@@ -2,6 +2,8 @@
 # Statický Astro build (build.format = "file": /problem → /problem.html).
 
 Options -MultiViews -Indexes
+# /en a /de sú súbory en.html, de.html aj priečinky: mod_dir by /en presmeroval na /en/ (slučka). Lomku pri priečinkoch rieši rewrite nižšie.
+DirectorySlash Off
 AddDefaultCharset UTF-8
 
 <IfModule mod_rewrite.c>
@@ -23,6 +25,13 @@ AddDefaultCharset UTF-8
 
   # /index → /
   RewriteRule ^index/?$ / [R=301,L]
+
+  # Jazykové domovské stránky (14. 10. 2026): /en a /de sú zároveň priečinky podstránok, súbor je en.html / de.html
+  # (/en/ bez presmerovania, aby nevznikla slučka, ak by hosting DirectorySlash Off ignoroval; kanonická URL je /en)
+  RewriteRule ^(en|de)/?$ $1.html [L]
+  # Ostatné priečinky (/dopyty, /admin …) → s lomkou, aby sa načítal index
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^(.*[^/])$ /$1/ [R=301,L]
 
   # Odstrániť koncovú lomku (okrem koreňa)
   RewriteCond %{REQUEST_FILENAME} !-d
